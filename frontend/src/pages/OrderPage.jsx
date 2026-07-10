@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getMenus, createOrder } from '../api.js';
+import { DEFAULT_MENU_IMAGE } from '../constants.js';
 
 export default function OrderPage() {
   const [menus, setMenus] = useState([]);
@@ -84,9 +85,9 @@ export default function OrderPage() {
             return (
               <div key={menu.id} className={`menu-card ${soldOut ? 'sold-out' : ''}`}>
                 <div className="menu-thumb">
-                  {menu.image_url && !imgError[menu.id] ? (
+                  {!imgError[menu.id] ? (
                     <img
-                      src={menu.image_url}
+                      src={menu.image_url || DEFAULT_MENU_IMAGE}
                       alt={menu.name}
                       loading="lazy"
                       onError={() => setImgError((prev) => ({ ...prev, [menu.id]: true }))}

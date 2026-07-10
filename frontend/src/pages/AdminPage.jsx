@@ -8,9 +8,10 @@ import {
   updateOrderStatus,
   deleteOrder,
 } from '../api.js';
+import { DEFAULT_MENU_IMAGE } from '../constants.js';
 
 const STATUSES = ['대기중', '제조중', '완료', '취소'];
-const EMPTY_FORM = { name: '', description: '', price: '', stock: '', is_available: true };
+const EMPTY_FORM = { name: '', description: '', price: '', stock: '', image_url: '', is_available: true };
 
 export default function AdminPage() {
   const [menus, setMenus] = useState([]);
@@ -46,6 +47,7 @@ export default function AdminPage() {
       description: form.description,
       price: Number(form.price),
       stock: Number(form.stock),
+      image_url: form.image_url,
       is_available: form.is_available,
     };
     try {
@@ -68,6 +70,7 @@ export default function AdminPage() {
       description: menu.description,
       price: menu.price,
       stock: menu.stock,
+      image_url: menu.image_url || '',
       is_available: menu.is_available,
     });
   };
@@ -138,6 +141,16 @@ export default function AdminPage() {
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
+          <div className="image-field">
+            <input
+              placeholder="이미지 URL (비워두면 기본 커피 사진)"
+              value={form.image_url}
+              onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+            />
+            {form.image_url && (
+              <img className="image-preview" src={form.image_url} alt="미리보기" />
+            )}
+          </div>
           <label className="checkbox">
             <input
               type="checkbox"
@@ -160,6 +173,7 @@ export default function AdminPage() {
           <thead>
             <tr>
               <th>ID</th>
+              <th>사진</th>
               <th>이름</th>
               <th>가격</th>
               <th>재고</th>
@@ -171,6 +185,16 @@ export default function AdminPage() {
             {menus.map((menu) => (
               <tr key={menu.id}>
                 <td>{menu.id}</td>
+                <td>
+                  <img
+                    className="table-thumb"
+                    src={menu.image_url || DEFAULT_MENU_IMAGE}
+                    alt={menu.name}
+                    onError={(e) => {
+                      e.currentTarget.src = DEFAULT_MENU_IMAGE;
+                    }}
+                  />
+                </td>
                 <td>{menu.name}</td>
                 <td>{menu.price.toLocaleString()}원</td>
                 <td>{menu.stock}</td>
