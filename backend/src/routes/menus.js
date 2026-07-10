@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { query } from '../db.js';
+import { findFreeImage } from '../imageSearch.js';
 
 const router = Router();
 
@@ -29,9 +30,14 @@ router.get('/:id', async (req, res, next) => {
 // POST /api/menus - 메뉴 생성 (관리자)
 router.post('/', async (req, res, next) => {
   try {
-    const { name, description = '', price, stock = 0, image_url = '', is_available = true } = req.body;
+    const { name, description = '', price, stock = 0, is_available = true } = req.body;
     if (!name || price == null) {
       return res.status(400).json({ error: '이름(name)과 가격(price)은 필수입니다.' });
+    }
+    // 이미지 URL이 없으면 저작권 없는 이미지를 자동으로 찾아 적용
+    let image_url = req.body.image_url;
+    if (!image_url) {
+      image_url = await findFreeImage(name);
     }
     const { rows } = await query(
       `INSERT INTO menus (name, description, price, stock, image_url, is_available)

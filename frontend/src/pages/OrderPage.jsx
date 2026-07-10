@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getMenus, createOrder } from '../api.js';
-import { DEFAULT_MENU_IMAGE } from '../constants.js';
+import MenuImage from '../MenuImage.jsx';
 
 export default function OrderPage() {
   const [menus, setMenus] = useState([]);
@@ -8,7 +8,6 @@ export default function OrderPage() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
-  const [imgError, setImgError] = useState({}); // 이미지 로드 실패한 메뉴 id
 
   async function loadMenus() {
     setLoading(true);
@@ -85,16 +84,7 @@ export default function OrderPage() {
             return (
               <div key={menu.id} className={`menu-card ${soldOut ? 'sold-out' : ''}`}>
                 <div className="menu-thumb">
-                  {!imgError[menu.id] ? (
-                    <img
-                      src={menu.image_url || DEFAULT_MENU_IMAGE}
-                      alt={menu.name}
-                      loading="lazy"
-                      onError={() => setImgError((prev) => ({ ...prev, [menu.id]: true }))}
-                    />
-                  ) : (
-                    <div className="menu-thumb-fallback">☕</div>
-                  )}
+                  <MenuImage src={menu.image_url} alt={menu.name} />
                   {soldOut && <span className="thumb-badge">품절</span>}
                 </div>
                 <div className="menu-card-body">

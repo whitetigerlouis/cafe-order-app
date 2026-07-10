@@ -143,7 +143,7 @@ export default function AdminPage() {
           />
           <div className="image-field">
             <input
-              placeholder="이미지 URL (비워두면 기본 커피 사진)"
+              placeholder="이미지 URL (비워두면 저작권 없는 사진 자동 적용)"
               value={form.image_url}
               onChange={(e) => setForm({ ...form, image_url: e.target.value })}
             />
