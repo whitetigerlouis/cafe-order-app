@@ -3,14 +3,21 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// PostgreSQL 커넥션 풀. 환경변수(PGHOST, PGUSER 등)를 자동으로 읽는다.
-const pool = new pg.Pool({
-  host: process.env.PGHOST || 'localhost',
-  port: Number(process.env.PGPORT) || 5432,
-  database: process.env.PGDATABASE || 'coffee_order',
-  user: process.env.PGUSER || 'postgres',
-  password: process.env.PGPASSWORD || 'postgres',
-});
+// PostgreSQL 커넥션 풀.
+// - 배포 환경(Render 등): DATABASE_URL 연결 문자열 + SSL 사용
+// - 로컬 개발: 개별 환경변수(PGHOST, PGUSER 등) 사용
+const pool = process.env.DATABASE_URL
+  ? new pg.Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+    })
+  : new pg.Pool({
+      host: process.env.PGHOST || 'localhost',
+      port: Number(process.env.PGPORT) || 5432,
+      database: process.env.PGDATABASE || 'coffee_order',
+      user: process.env.PGUSER || 'postgres',
+      password: process.env.PGPASSWORD || 'postgres',
+    });
 
 pool.on('error', (err) => {
   console.error('예상치 못한 DB 커넥션 오류:', err);
